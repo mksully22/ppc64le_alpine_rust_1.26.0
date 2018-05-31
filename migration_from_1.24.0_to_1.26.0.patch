@@ -1,0 +1,72 @@
+--- a/src/libstd/sync/mpsc/cache_aligned.rs
++++ b/src/libstd/sync/mpsc/cache_aligned.rs
+@@ -11,7 +11,6 @@
+ use ops::{Deref, DerefMut};
+ 
+ #[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+-#[repr(align(64))]
+ pub(super) struct Aligner;
+ 
+ #[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+--- a/src/librustc_data_structures/lib.rs
++++ b/src/librustc_data_structures/lib.rs
+@@ -19,7 +19,6 @@
+ #![doc(html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
+       html_favicon_url = "https://www.rust-lang.org/favicon.ico",
+       html_root_url = "https://doc.rust-lang.org/nightly/")]
+-#![deny(warnings)]
+ 
+ #![feature(collections_range)]
+ #![feature(nonzero)]
+--- a/src/librustc/lib.rs
++++ b/src/librustc/lib.rs
+@@ -39,7 +39,6 @@
+ #![doc(html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
+        html_favicon_url = "https://doc.rust-lang.org/favicon.ico",
+        html_root_url = "https://doc.rust-lang.org/nightly/")]
+-#![deny(warnings)]
+ 
+ #![feature(box_patterns)]
+ #![feature(box_syntax)]
+--- a/src/libcore/any.rs
++++ b/src/libcore/any.rs
+@@ -368,7 +368,7 @@
+     /// ```
+     #[stable(feature = "rust1", since = "1.0.0")]
+     #[rustc_const_unstable(feature="const_type_id")]
+-    pub const fn of<T: ?Sized + 'static>() -> TypeId {
++    pub fn of<T: ?Sized + 'static>() -> TypeId {
+         TypeId {
+             t: unsafe { intrinsics::type_id::<T>() },
+         }
+--- a/src/librustc_traits/lib.rs
++++ b/src/librustc_traits/lib.rs
+@@ -11,9 +11,8 @@
+ //! New recursive solver modeled on Chalk's recursive solver. Most of
+ //! the guts are broken up into modules; see the comments in those modules.
+ 
+-#![deny(warnings)]
+-
+ #![feature(crate_visibility_modifier)]
++#![feature(use_nested_groups)]
+ #![cfg_attr(stage0, feature(match_default_bindings))]
+ #![cfg_attr(stage0, feature(underscore_lifetimes))]
+ 
+--- a/src/librustc_typeck/lib.rs
++++ b/src/librustc_typeck/lib.rs
+@@ -68,7 +68,6 @@
+ #![doc(html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
+       html_favicon_url = "https://doc.rust-lang.org/favicon.ico",
+       html_root_url = "https://doc.rust-lang.org/nightly/")]
+-#![deny(warnings)]
+ 
+ #![allow(non_camel_case_types)]
+ 
+@@ -86,6 +85,7 @@
+ #![feature(refcell_replace_swap)]
+ #![feature(rustc_diagnostic_macros)]
+ #![feature(slice_patterns)]
++#![feature(use_nested_groups)]
+ #![cfg_attr(stage0, feature(i128_type))]
+ #![cfg_attr(stage0, feature(never_type))]
+ #![feature(dyn_trait)]

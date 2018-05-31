@@ -1,0 +1,71 @@
+--- a/APKBUILD
++++ b/APKBUILD
+@@ -9,7 +9,7 @@
+ pkgrel=0
+ pkgdesc="The Rust Programming Language"
+ url="http://www.rust-lang.org"
+-arch="x86_64"
++arch="x86_64 ppc64le"
+ license="Apache-2.0 BSD ISC MIT"
+ 
+ # gcc is needed at runtime just for linking. Someday rustc might invoke
+@@ -40,6 +39,18 @@
+ 	alpine-change-rpath-to-rustlib.patch
+ 	alpine-target.patch
+ 	install-template-shebang.patch
++	s7_ppc64le_target.patch
++	s7_liblibc_modrs.patch
++	s7_liblibc_b64modrs.patch
++	s7_liblibc_b32modrs.patch
++	s7_liblibc_b64x86_64.patch
++	s7_liblibc_b64powerpc64.patch
++	s7_cargo_libc_modrs.patch
++	s7_cargo_libc_b32modrs.patch
++	s7_cargo_libc_b64modrs.patch
++	s7_cargo_libc_b64x86_64.patch
++	s7_cargo_libc_b64powerpc64le.patch
++	s7_cargo_libc_checksum.patch
+ 	check-rustc
+ 	"
+ builddir="$srcdir/rustc-$pkgver-src"
+@@ -84,9 +95,8 @@
+ 		--enable-vendor \
+ 		--disable-jemalloc
+ 
+-	RUST_BACKTRACE=1 \
+-		RUSTC_CRT_STATIC="false" \
+-		./x.py build -v
++	unset MAKEFLAGS
++	RUST_BACKTRACE=1 RUSTC_CRT_STATIC="false" taskset 0x1 ./x.py build -j1 -v
+ }
+ 
+ check() {
+@@ -104,9 +114,8 @@
+ package() {
+ 	cd "$builddir"
+ 
+-	RUST_BACKTRACE=1 \
+-		RUSTC_CRT_STATIC="false" \
+-		./x.py dist -v
++	unset MAKEFLAGS
++	RUST_BACKTRACE=1 RUSTC_CRT_STATIC="false" taskset 0x1 ./x.py dist -j1 -v
+ 
+ 	local component; for component in rustc rust-std; do
+ 		tar -xf "build/dist/$component-$pkgver-$CTARGET.tar.gz"
+@@ -190,4 +199,16 @@
+ 0542e8ffeb7ff6017aeec84d99c14802c6536433b41dafe7c8fc0c40908548228f34ef142ad6ad94235115b05f02ce157553b470b0f242292f90f3125b249e94  alpine-change-rpath-to-rustlib.patch
+ 9b451a7c4a761ff7e5f269cd5f84e59afbaedc8ef5d1d053cd3e315ce8d99f1a25fa7291e5dacb3cfbac32b4d15518a616bd703ab28844484285929e71dd2720  alpine-target.patch
+ 7d59258d4462eba0207739a5c0c8baf1f19d9a396e5547bb4d59d700eb94d50ba6add2e523f3e94e29e993821018594625ea4ac86304fb58f7f8c82622a26ab0  install-template-shebang.patch
++6c13a35cfd7d913fb5c2003ca6489a6cf794432346a8a7fc4a416241d4f1bf1cb6cca8088aad2bcd2a8e41ef4dd912ebc6661608061df4804eb147ae53c7f01a  s7_ppc64le_target.patch
++29bda57a0b6f8b77e723993a9616516dd6fcfe4220a7e1b124358836389cebfe36a1293adc0e5ae8ebc590a440c6ada69d7ff4afe705c4ce777ee6ee79c488d3  s7_liblibc_modrs.patch
++094aeb3f57e2ff33ec427757497e4694d8008b99590d5c72a9625f0fcdf28416eb9508d83cdd7772814c7e41373c46f32fa237ce1676485c29b3a49ab15cff8c  s7_liblibc_b64modrs.patch
++99c853c7b152eea2ba4ca197714f425bd3ccfcb559117bb47f8d078a73001efae50802a9a21a5dbb20578d2e1893dc93ccd2928cde365c72217e94832c3eab92  s7_liblibc_b32modrs.patch
++519f91040ad5e44bc792b837415c00748069c497a71bdc7b7649853990b5a52de1d45a7953788ff28df02628a39c65bb4cc063feb6157e4f3fbe3c32135f48ad  s7_liblibc_b64x86_64.patch
++42b877999161ddbe27c5ffb5dbd89f82e66f3acc1e2c8fea91e72e8c9b2fd36409ae451b13064afbc15356896afba498e7cb3f532ef7e802ce34d7e4801427b1  s7_liblibc_b64powerpc64.patch
++66dbce73461379d153ff18f0be62db93af90c54ce009bcc6f7bf1036ff1545c64917021cb24497caf5145c6b4202db05ec9e8c861f4b65de6bb72c443e6ad6f9  s7_cargo_libc_modrs.patch
++982a26fec6074a4ec48b7b5e0578e54163a09024f545f2fca3a96025455761ca08963522dd0832fb42bcad64b5c70b26336a5fbed2b2b8b2e3504a7f4c409a25  s7_cargo_libc_b32modrs.patch
++193f3639e2187d8a9a09a5778ff178aad26df0261fddf7eb83eb899fb8db991c96fc3e023a1b2b633ea7ae4625deb7e5e0f91b1a6021a2292ad9265012cf6cc5  s7_cargo_libc_b64modrs.patch
++65dbcd98175d46a83f74f092515db3faf95d43531d2e0c6267d1fb8069902b8f326fa1231fc55a8daee8e273af1a96b5ae7a393b21b631a1cecb3da85e1c8312  s7_cargo_libc_b64x86_64.patch
++15b5cf58a36a7df374ce3fa1ea031b8e810e746e12fd6b1cdcbfe97f6b9631eed3274c959ae9348d20b310e11717f7e8edda5011aed8ca90a1bdd8f01d4768f9  s7_cargo_libc_b64powerpc64le.patch
++1298ff7337fe638e0f48901d1c42d1110b5a83e312084500543d8e75a44ea6efaf458abe06d197ca1a0680de9b6c6cb4ea55d1d56f713dc8f0c5c908fcb09360  s7_cargo_libc_checksum_ppc64le.patch
+ 79549055dea81379c890b495c82456ab497a9179ec6702c59e11d0748bc668f47fc3d6a69c27a0545bb87c01318631dffc69260bf2d4badc75f53cbf7fad7528  check-rustc"
